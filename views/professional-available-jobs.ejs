@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans:wght@400;500;700" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900" style="font-family: 'Inter', 'Noto Sans', sans-serif;">
+
+    <% if (messages.error) { %>
+        <% messages.error.forEach(err => { %>
+            <div class="bg-red-500 text-white p-2 rounded mb-3">
+                <%= err %>
+            </div>
+        <% }) %>
+    <% } %>
+    
+    <% if (messages.success) { %>
+        <% messages.success.forEach(msg => { %>
+            <div class="bg-green-500 text-white p-2 rounded mb-3">
+                <%= msg %>
+            </div>
+        <% }) %>
+    <% } %>
+
+    <div class="flex h-screen border border-gray-300 rounded-lg shadow-lg overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-gray-100 shadow-md min-h-screen p-6 flex flex-col justify-between border-r border-gray-300">
+            <div>
+                <div class="flex items-center gap-4 text-black mb-8">
+                    <div class="w-6 h-6 text-black">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-black text-xl font-bold">ProConnect</h2>
+                </div>
+
+                <h2 class="text-lg font-bold text-gray-800 mb-6">Professional Dashboard</h2>
+                <nav class="space-y-4">
+                    <a href="/professional-home" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        🏠 Home
+                    </a>
+                    <a href="/professional-available-jobs" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black font-bold">
+                        📋 Available Jobs
+                    </a>
+                    <a href="/professional-enrolled-jobs" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        🔖 Enrolled Jobs
+                    </a>
+                    <a href="/professional-payment-requests" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        💰 Request Payment
+                    </a>
+                    <a href="/professional-job-history" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        📜 Job History
+                    </a>                    
+                </nav>
+            </div>
+
+            <a href="/logout" class="block text-red-500 font-medium mt-auto flex items-center gap-2 hover:text-red-600">
+                🚪 Logout
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-10 bg-gray-50">
+            <header class="flex items-center justify-between border-b border-gray-300 pb-3">
+                <h2 class="text-2xl font-bold text-gray-900">Available Jobs</h2>
+            </header>
+
+            <section class="mt-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900">Browse and Apply for Jobs</h3>
+
+                    <!-- Jobs Table -->
+                    <div class="overflow-x-auto max-h-80 overflow-y-auto border border-gray-300 rounded-lg">
+                        <table class="w-full border-collapse border border-gray-300 text-left">
+                            <thead class="sticky top-0 bg-gray-100 shadow">
+                                <tr>
+                                    <th class="py-3 px-4 border border-gray-300">Job Title</th>
+                                    <th class="py-3 px-4 border border-gray-300">Description</th>
+                                    <th class="py-3 px-4 border border-gray-300">Company</th>
+                                    <th class="py-3 px-4 border border-gray-300">Stages</th>
+                                    <th class="py-3 px-4 border border-gray-300">Total Work Time (hrs)</th>
+                                    <th class="py-3 px-4 border border-gray-300">Pay</th>
+                                    <th class="py-3 px-4 border border-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% jobs.forEach(job => { %>
+                                    <tr class="border-t border-gray-300">
+                                        <td class="py-3 px-4"><%= job.title %></td>
+                                        <td class="py-3 px-4"><%= job.description %></td>
+                                        <td class="py-3 px-4"><%= job.company_name %></td>
+                                        <td class="py-3 px-4">
+                                            <ul class="text-sm list-disc pl-4">
+                                                <% job.stages.forEach(stage => { %>
+                                                    <li><%= stage.stage_name %> - <%= stage.hours_required %> hrs</li>
+                                                <% }); %>
+                                            </ul>
+                                        </td>
+                                        <td class="py-3 px-4"><%= job.total_work_time %> hrs</td>
+                                        <td class="py-3 px-4">$<%= job.pay %></td>
+                                        <td class="py-3 px-4">
+                                            <form action="/apply-job" method="POST">
+                                                <input type="hidden" name="job_id" value="<%= job.id %>">
+                                                <input type="hidden" name="professional_id" value="<%= professional.id %>">
+                                                <button type="submit" class="apply-btn py-1 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                                    Apply
+                                                </button>
+                                            </form>                                            
+                                        </td>                                        
+                                    </tr>
+                                <% }); %>
+                            </tbody>                                                    
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".apply-btn").forEach(button => {
+                button.addEventListener("click", async function () {
+                    const jobId = this.getAttribute("data-job-id");
+
+                    try {
+                        const response = await fetch(`/apply-job/${jobId}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" }
+                        });
+
+                        const data = await response.json();
+                        if (response.ok) {
+                            this.textContent = "Applied";
+                            this.classList.remove("bg-blue-500", "hover:bg-blue-600");
+                            this.classList.add("bg-gray-400");
+                            this.disabled = true;
+                        } else {
+                            alert(data.message);
+                        }
+                    } catch (error) {
+                    console.error("Error applying for job:", error);
+                    /* alert("Something went wrong."); */
+                }
+            });
+        });
+    });
+
+    </script>    
+
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans:wght@400;500;700" rel="stylesheet">
+
+    <script defer>
+        function toggleModal(modalId) {
+            document.getElementById(modalId).classList.toggle("hidden");
+        }
+
+        function addStageField() {
+            const container = document.getElementById("stagesContainer");
+            const div = document.createElement("div");
+            div.classList = "flex items-center space-x-2 mb-2";
+
+            const inputStage = document.createElement("input");
+            inputStage.type = "text";
+            inputStage.name = "stages[]";
+            inputStage.placeholder = "Stage name (e.g., Design)";
+            inputStage.classList = "border border-gray-300 p-2 rounded-md flex-1";
+
+            const inputTime = document.createElement("input");
+            inputTime.type = "number";
+            inputTime.name = "stage_times[]";
+            inputTime.placeholder = "Hours";
+            inputTime.classList = "border border-gray-300 p-2 rounded-md w-20";
+
+            div.appendChild(inputStage);
+            div.appendChild(inputTime);
+            container.appendChild(div);
+        }
+
+        function acceptApplicant(jobId, applicantId) {
+            // Change status to "In Progress" and disable buttons
+            document.getElementById(`status-${jobId}`).textContent = "In Progress";
+            document.getElementById(`status-${jobId}`).classList = "text-yellow-600 font-bold";
+
+            document.getElementById(`view-btn-${jobId}`).disabled = true;
+            document.getElementById(`view-btn-${jobId}`).classList.add("opacity-50", "cursor-not-allowed");
+
+            document.getElementById(`delete-btn-${jobId}`).disabled = true;
+            document.getElementById(`delete-btn-${jobId}`).classList.add("opacity-50", "cursor-not-allowed");
+
+            document.getElementById('applicantsModal').classList.add("hidden");
+
+            alert("Applicant accepted. Job is now in progress.");
+        }
+    </script>
+</head>
+<body class="bg-white text-gray-900" style="font-family: 'Inter', 'Noto Sans', sans-serif;">
+
+    <% if (messages.error) { %>
+        <% messages.error.forEach(err => { %>
+            <div class="bg-red-500 text-white p-2 rounded mb-3">
+                <%= err %>
+            </div>
+        <% }) %>
+    <% } %>
+    
+    <% if (messages.success) { %>
+        <% messages.success.forEach(msg => { %>
+            <div class="bg-green-500 text-white p-2 rounded mb-3">
+                <%= msg %>
+            </div>
+        <% }) %>
+    <% } %>
+
+    <div class="flex h-screen border border-gray-300 rounded-lg shadow-lg overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-gray-100 shadow-md min-h-screen p-6 flex flex-col justify-between border-r border-gray-300">
+            
+            <div>
+                
+                <!-- ProConnect Logo -->
+                <div class="flex items-center gap-4 text-black mb-8">
+                    <div class="w-6 h-6 text-black">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-black text-xl font-bold">ProConnect</h2>
+                </div>
+
+                <!-- Dashboard Title -->
+                <h2 class="text-lg font-bold text-gray-800 mb-6">Company Dashboard</h2>
+                
+                <!-- Navigation Links -->
+                <nav class="space-y-4">
+                    
+                    <a href="/company-home" 
+                        class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        🏠 Home
+                    </a>
+
+                    <a href="/company-jobs" 
+                        class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        📌 Jobs
+                    </a>
+
+                    <a href="/company-pending-payments" 
+                        class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        💳 Pending Payments
+                    </a>
+
+                    <a href="/company-job-history" 
+                        class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        📜 Job History
+                    </a>
+
+                </nav>
+                
+            </div>
+
+            <!-- Logout Button -->
+            <a href="/logout" 
+                class="block text-red-500 font-medium mt-auto flex items-center gap-2 hover:text-red-600">
+                🚪 Logout
+            </a>
+        
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 bg-gray-50">
+            <header class="flex items-center justify-between border-b border-gray-300 pb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Company Jobs</h2>
+                <button onclick="toggleModal('addJobModal')" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                    + Create Job
+                </button>
+            </header>
+
+            <!-- Job Listings -->
+            <section class="mt-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-900">Posted Jobs</h3>
+                    <div class="overflow-x-auto max-h-96 overflow-y-auto">
+                        <table class="w-full border-collapse text-sm">                    
+                            <thead>
+                                <tr class="border-b bg-gray-100 text-left">
+                                    <th class="py-3 px-4">Job Title</th>
+                                    <th class="py-3 px-4">Description</th>
+                                    <th class="py-3 px-4">Stages</th>
+                                    <th class="py-3 px-4 text-center">Total Work Time (hrs)</th>
+                                    <th class="py-3 px-4 text-center">Pay</th> <!-- Pay column added here -->
+                                    <th class="py-3 px-4 text-center">Status</th>
+                                    <th class="py-3 px-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (jobs.length > 0) { %>
+                                    <% jobs.forEach((job) => { %>
+                                        <tr class="border-b">
+                                            <td class="py-3 px-4"><%= job.title %></td>
+                                            <td class="py-3 px-4"><%= job.description %></td>
+                                            <td class="py-3 px-4">
+                                                <ul class="text-sm list-disc pl-4">
+                                                    <% job.stages.forEach((stage) => { %>
+                                                        <li><%= stage.stage_name %> - <%= stage.hours_required %> hrs</li>
+                                                    <% }) %>
+                                                </ul>
+                                            </td>
+                                            <td class="py-3 px-4 text-center"><%= job.total_work_time %></td>
+                                            <td class="py-3 px-4 text-center">₦<%= job.pay %></td>
+                                            <td id="status-<%= job.id %>" class="py-3 px-4 text-center text-gray-600 font-bold"><%= job.status %></td>
+                                            <td class="py-3 px-4 flex justify-center space-x-2">
+                                                <button id="view-btn-<%= job.id %>" onclick="fetchApplicants(<%= job.id %>)" class="bg-gray-700 text-white px-3 py-1 rounded-md">
+                                                    View Applicants
+                                                </button>
+                                                
+                                                <form action="/company/jobs/<%= job.id %>/delete" method="POST">
+                                                    <button id="delete-btn-<%= job.id %>" class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7" class="py-4 px-4 text-center text-gray-500">
+                                            No jobs available. Click <a href="/company/jobs/create" class="text-blue-600 underline">"Create Job"</a> to post one.
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                                                       
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- View Applicants Modal -->
+    <div id="applicantsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-md w-96 relative">
+            <h2 class="text-lg font-semibold mb-4">Applicants</h2>
+            <button onclick="toggleModal('applicantsModal')" class="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+            <ul id="applicantsList">
+                <!-- Applicants will be dynamically inserted here -->
+            </ul>
+        </div>
+    </div>
+
+
+
+        <!-- Add Job Modal -->
+    <div id="addJobModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-md w-96 relative">
+            <h2 class="text-lg font-semibold mb-4">Create a New Job</h2>
+            <button onclick="toggleModal('addJobModal')" class="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+            <form action="/company/jobs/create" method="POST">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium">Job Title</label>
+                    <input type="text" name="title" class="w-full border border-gray-300 p-2 rounded-md">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium">Description</label>
+                    <textarea name="description" class="w-full border border-gray-300 p-2 rounded-md"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium">Stages</label>
+                    <div id="stagesContainer"></div>
+                    <button type="button" onclick="addStageField()" class="text-blue-500 text-sm underline">+ Add Stage</button>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium">Total Allotted Work Time (hrs)</label>
+                    <input type="number" name="total_hours" class="w-full border border-gray-300 p-2 rounded-md">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium">Pay (₦)</label>
+                    <input type="number" name="pay" class="w-full border border-gray-300 p-2 rounded-md">
+                </div>
+                
+                <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md">Create Job</button>
+            </form>
+        </div>
+    </div>
+
+
+
+</body>
+<script>
+    async function fetchApplicants(jobId) {
+    try {
+        const response = await fetch(`/company/jobs/${jobId}/applicants`);
+        const applicants = await response.json();
+
+        const applicantsList = document.getElementById("applicantsList");
+        applicantsList.innerHTML = ""; // Clear previous applicants
+
+        if (applicants.length === 0) {
+            applicantsList.innerHTML = "<li class='text-gray-500'>No applicants yet.</li>";
+        } else {
+            applicants.forEach(applicant => {
+                const listItem = document.createElement("li");
+                listItem.classList.add("mb-3", "flex", "justify-between");
+
+                listItem.innerHTML = `
+                    <span>${applicant.full_name}</span>
+                    <button onclick="acceptApplicant(${jobId}, ${applicant.id})" class="bg-green-500 text-white px-3 py-1 rounded-md">Accept</button>
+                `;
+
+                applicantsList.appendChild(listItem);
+            });
+        }
+
+        // ✅ Open the modal only after fetching the applicants
+        toggleModal('applicantsModal'); 
+
+    } catch (error) {
+        console.error("Error fetching applicants:", error);
+    }
+}
+
+
+async function acceptApplicant(jobId, applicantId) {
+    try {
+        const response = await fetch(`/company/jobs/${jobId}/accept/${applicantId}`, {
+            method: "POST"
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Applicant accepted successfully!");
+            fetchApplicants(jobId); // Refresh the list
+        } else {
+            alert("Failed to accept applicant.");
+        }
+    } catch (error) {
+        console.error("Error accepting applicant:", error);
+        alert("Something went wrong.");
+    }
+}
+
+async function rejectApplicant(applicantId, jobId) {
+    try {
+        const response = await fetch(`/company/jobs/${jobId}/reject/${applicantId}`, {
+            method: "POST"
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Applicant rejected.");
+            fetchApplicants(jobId); // Refresh the list
+        } else {
+            alert("Failed to reject applicant.");
+        }
+    } catch (error) {
+        console.error("Error rejecting applicant:", error);
+        alert("Something went wrong.");
+    }
+}
+
+function toggleModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.toggle("hidden");
+}
+
+</script>
+</html>

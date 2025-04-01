@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans:wght@400;500;700" rel="stylesheet">
+</head>
+<body class="bg-[#f8fafb] font-sans" style="font-family: 'Inter', 'Noto Sans', sans-serif;">
+    <% if (messages.error) { %>
+        <% messages.error.forEach(err => { %>
+            <div class="bg-red-500 text-white p-2 rounded mb-3">
+                <%= err %>
+            </div>
+        <% }) %>
+    <% } %>
+    
+    <% if (messages.success) { %>
+        <% messages.success.forEach(msg => { %>
+            <div class="bg-green-500 text-white p-2 rounded mb-3">
+                <%= msg %>
+            </div>
+        <% }) %>
+    <% } %>
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between border-b border-[#e8eef3] px-10 py-3 bg-white">
+            <div class="flex items-center gap-4 text-[#0e151b]">
+                <div class="text-2xl">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor"></path>
+                    </svg>
+                </div>
+                <a href="/"><h2 class="text-lg font-bold">ProConnect Admin</h2></a>
+            </div>
+            <div>
+                <a href="/logout" class="text-sm text-[#0e151b]">Logout</a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-10">
+            <h2 class="text-2xl font-bold text-[#0e151b] mb-6">Dashboard</h2>
+
+            <!-- Company Requests -->
+            <div class="bg-white rounded-lg shadow p-6 mb-8">
+                <h3 class="text-xl font-semibold mb-4">Company Signup Requests</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-[#d1dce6] rounded-lg shadow-md">
+                        <thead class="bg-gray-100">
+                            <tr class="text-left">
+                                <th class="py-3 px-4 border-b">Company Name</th>
+                                <th class="py-3 px-4 border-b">Email</th>
+                                <th class="py-3 px-4 border-b">Phone</th>
+                                <th class="py-3 px-4 border-b">Location</th>
+                                <th class="py-3 px-4 border-b">Industry</th>
+                                <th class="py-3 px-4 border-b">Description</th>
+                                <th class="py-3 px-4 border-b">Website</th>
+                                <th class="py-3 px-4 border-b">Verification Document</th>
+                                <th class="py-3 px-4 border-b">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Static Data Example -->
+                            <% if (companies.length > 0) { %>
+                                <% companies.forEach(company => { %>
+                                    <tr class="odd:bg-gray-50 even:bg-white">
+                                        <td class="py-3 px-4 border-b"><%= company.full_name %></td>
+                                        <td class="py-3 px-4 border-b"><%= company.email %></td>
+                                        <td class="py-3 px-4 border-b"><%= company.phone_number %></td>
+                                        <td class="py-3 px-4 border-b"><%= company.location %></td>
+                                        <td class="py-3 px-4 border-b"><%= company.industry_type %></td>
+                                        <td class="py-3 px-4 border-b"><%= company.company_description %></td>
+                                        <td class="py-3 px-4 border-b"><a href="<%= company.company_website %>" class="text-blue-500">Visit</a></td>
+                                        <td class="py-3 px-4 border-b text-center">
+                                            <a href="/uploads/<%= company.verification_document %>" class="text-blue-500" download><i class="fas fa-eye"></i>Download</a>
+
+                                        </td>
+                                        <td class="py-3 px-4 border-b flex gap-2">
+                                            <form action="/admin/approve" method="POST">
+                                                <input type="hidden" name="user_id" value="<%= company.id %>">
+                                                <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Approve</button>
+                                            </form>
+                                            <form action="/admin/reject" method="POST">
+                                                <input type="hidden" name="user_id" value="<%= company.id %>">
+                                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Reject</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="9" class="text-center py-4">No pending company requests.</td>
+                                </tr>
+                            <% } %>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Professional Requests -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-xl font-semibold mb-4">Professional Signup Requests</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-[#d1dce6] rounded-lg shadow-md">
+                        <thead class="bg-gray-100">
+                            <tr class="text-left">
+                                <th class="py-3 px-4 border-b">Full Name</th>
+                                <th class="py-3 px-4 border-b">Email</th>
+                                <th class="py-3 px-4 border-b">Phone</th>
+                                <th class="py-3 px-4 border-b">Location</th>
+                                <th class="py-3 px-4 border-b">Expertise</th>
+                                <th class="py-3 px-4 border-b">Experience (Years)</th>
+                                <th class="py-3 px-4 border-b">Short Bio</th>
+                                <th class="py-3 px-4 border-b">Verification Document</th>
+                                <th class="py-3 px-4 border-b">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (professionals.length > 0) { %>
+                                <% professionals.forEach(professional => { %>
+                                    <tr class="odd:bg-gray-50 even:bg-white">
+                                        <td class="py-3 px-4 border-b"><%= professional.full_name %></td>
+                                        <td class="py-3 px-4 border-b"><%= professional.email %></td>
+                                        <td class="py-3 px-4 border-b"><%= professional.phone_number %></td>
+                                        <td class="py-3 px-4 border-b"><%= professional.location %></td>
+                                        <td class="py-3 px-4 border-b"><%= professional.field_of_expertise %></td>
+                                        <td class="py-3 px-4 border-b"><%= professional.years_of_experience %></td>
+                                        <td class="py-3 px-4 border-b"><%= professional.short_bio %></td>
+                                        <td class="py-3 px-4 border-b text-center">
+                                            <a href="/uploads/<%= professional.verification_document %>" class="text-blue-500" download><i class="fas fa-eye"></i>Download</a>
+
+                                        </td>
+                                        <td class="py-3 px-4 border-b flex gap-2">
+                                            <form action="/admin/approve" method="POST">
+                                                <input type="hidden" name="user_id" value="<%= professional.id %>">
+                                                <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Approve</button>
+                                            </form>
+                                            <form action="/admin/reject" method="POST">
+                                                <input type="hidden" name="user_id" value="<%= professional.id %>">
+                                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Reject</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="9" class="text-center py-4">No pending professional requests.</td>
+                                </tr>
+                            <% } %>                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- FontAwesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

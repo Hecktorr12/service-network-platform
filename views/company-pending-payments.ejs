@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Payments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans:wght@400;500;700" rel="stylesheet">
+
+    <script defer>
+        function toggleModal(modalId) {
+            document.getElementById(modalId).classList.toggle("hidden");
+        }
+    
+        function confirmPayment(paymentId, button) {
+            // Set the modal's confirm button action
+            const confirmButton = document.getElementById("confirmPaymentButton");
+            confirmButton.onclick = function () {
+                updatePaymentStatus(paymentId, button);
+                toggleModal("paymentConfirmationModal");
+            };
+    
+            // Show the modal
+            toggleModal("paymentConfirmationModal");
+        }
+    
+        async function updatePaymentStatus(paymentId, button) {
+            try {
+                const response = await fetch('/company-mark-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentId })
+                });
+    
+                if (response.ok) {
+                    button.dataset.status = "Paid";
+                    button.textContent = "Paid";
+                    button.classList.remove("bg-red-600");
+                    button.classList.add("bg-green-600");
+                } else {
+                    alert("Failed to update payment status");
+                }
+            } catch (error) {
+                console.error("Error updating payment status:", error);
+            }
+        }
+    </script>
+    
+</head>
+<body class="bg-white text-gray-900" style="font-family: 'Inter', 'Noto Sans', sans-serif;">
+
+    <div class="flex h-screen border border-gray-300 rounded-lg shadow-lg overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-gray-100 shadow-md min-h-screen p-6 flex flex-col justify-between border-r border-gray-300">
+            <div>
+                <div class="flex items-center gap-4 text-black mb-8">
+                    <div class="w-6 h-6 text-black">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-black text-xl font-bold">ProConnect</h2>
+                </div>
+
+                <h2 class="text-lg font-bold text-gray-800 mb-6">Company Dashboard</h2>
+
+                <nav class="space-y-4">
+                    <a href="/company-home" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">🏠 Home</a>
+                    <a href="/company-jobs" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">📌 Jobs</a>
+                    <a href="/company-pending-payments" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">💳 Pending Payments</a>
+                    <a href="/company-job-history" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">📜 Job History</a>
+                </nav>
+            </div>
+
+            <a href="/logout" class="block text-red-500 font-medium mt-auto flex items-center gap-2 hover:text-red-600">🚪 Logout</a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 bg-gray-50">
+            <header class="border-b border-gray-300 pb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Pending Payments</h2>
+            </header>
+
+            <section class="mt-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-900">Pending Payment Requests</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse text-sm">
+                            <thead>
+                                <tr class="border-b bg-gray-100 text-left">
+                                    <th class="py-3 px-4">Name</th>
+                                    <th class="py-3 px-4">Job Done</th>
+                                    <th class="py-3 px-4">Amount</th>
+                                    <th class="py-3 px-4">Bank Account Details</th>
+                                    <th class="py-3 px-4 text-center">Payment Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (payments.length > 0) { %>
+                                    <% payments.forEach(payment => { %>
+                                        <tr class="border-b">
+                                            <td class="py-3 px-4"><%= payment.professional_name %></td>
+                                            <td class="py-3 px-4"><%= payment.job_title %></td>
+                                            <td class="py-3 px-4">₦<%= payment.pay %></td>
+                                            <td class="py-3 px-4"><%= payment.bank_name %> - <%= payment.account_number %> - <%= payment.account_name %></td>
+                                            <td class="py-3 px-4 text-center">
+                                                <button 
+                                                    onclick="confirmPayment(<%= payment.id %>, this)" 
+                                                    class="px-3 py-1 text-white rounded-md <%= payment.company_payment_status ? 'bg-green-600' : 'bg-red-600' %>"
+                                                    data-status="<%= payment.company_payment_status ? 'Paid' : 'Not Paid' %>">
+                                                    <%= payment.company_payment_status ? 'Paid' : 'Not Paid' %>
+                                                </button>
+                                            </td>                                            
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-gray-500">No pending payments</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Payment Confirmation Modal -->
+    <div id="paymentConfirmationModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg p-6 shadow-lg w-96">
+            <h3 class="text-lg font-semibold text-gray-900">Confirm Payment</h3>
+            <p class="text-gray-600 mt-2">Are you sure you have paid the professional?</p>
+            <div class="mt-4 flex justify-end gap-3">
+                <button onclick="toggleModal('paymentConfirmationModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Cancel</button>
+                <button id="confirmPaymentButton" class="px-4 py-2 bg-blue-600 text-white rounded-md">Yes, I Have Paid</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

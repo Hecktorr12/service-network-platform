@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup - Company | ProConnect</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap" />
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="bg-[#f8fafb] min-h-screen flex flex-col font-['Inter', 'Noto Sans', sans-serif]">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e8eef3] px-10 py-3 bg-white">
+        <div class="flex items-center gap-4 text-[#0e151b]">
+            <div class="size-4">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor"></path>
+                </svg>
+            </div>
+            <a href="/"><h2 class="text-[#0e151b] text-lg font-bold tracking-[-0.015em]">ProConnect</h2></a>
+        </div>
+    </header>
+
+    <!-- Signup Section -->
+    <section class="flex flex-1 justify-center items-center py-10 px-4">
+        <div class="max-w-[500px] w-full bg-white shadow-lg rounded-xl p-8">
+            <h1 class="text-2xl font-bold text-[#0e151b] text-center">Sign Up Your Company</h1>
+            <p class="text-sm text-[#507695] text-center mt-2">Create an account to hire top professionals</p>
+
+            <form method="post" action="/signup-company" enctype="multipart/form-data" class="mt-6 space-y-4">
+                <div>
+                    <label for="full_name" class="block text-sm font-medium text-[#0e151b]">Company Name</label>
+                    <input id="full_name" name="full_name" type="text" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter company name" required />
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-[#0e151b]">Company Email</label>
+                    <input id="email" name="email" type="email" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter company email" required />
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-[#0e151b]">Password</label>
+                    <input id="password" name="password" type="password" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter password" required />
+                </div>
+
+                <!-- <div>
+                    <label class="block text-sm font-medium text-[#0e151b]">Confirm Password</label>
+                    <input type="password" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Confirm password" required />
+                </div>
+ -->
+                <div>
+                    <label for="location" class="block text-sm font-medium text-[#0e151b]">Company Address</label>
+                    <input id="location" name="location" type="text" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter company address" required />
+                </div>
+
+                <div>
+                    <label for="phone_number" class="block text-sm font-medium text-[#0e151b]">Company Phone Number</label>
+                    <input id="phone_number" name="phone_number" type="tel" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter phone number" required />
+                </div>
+
+                <div>
+                    <label for="industry_type" class="block text-sm font-medium text-[#0e151b]">Industry Type</label>
+                    <select id="industry_type" name="industry_type" class="form-select w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" required>
+                        <option value="">Select an industry</option>
+                        <option value="IT">Information Technology</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Education">Education</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="company_description" class="block text-sm font-medium text-[#0e151b]">Company Description</label>
+                    <textarea id="company_description" name="company_description" class="form-textarea w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Briefly describe your company..." rows="3" required></textarea>
+                </div>
+
+                <div>
+                    <label for="company_website" class="block text-sm font-medium text-[#0e151b]">Company Website (Optional)</label>
+                    <input id="company_website" name="company_website" type="url" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="https://yourcompany.com" />
+                </div>
+
+                <!-- 🆕 Verification Upload Field -->
+                <div>
+                    <label for="verification_document" class="block text-sm font-medium text-[#0e151b]">Upload Company Registration Document</label>
+                    <input id="verification_document" name="verification_document" type="file" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" accept=".pdf,.jpg,.jpeg,.png,.docx" required />
+                    <p class="text-xs text-[#507695] mt-1">Upload a valid registration certificate (PDF, JPG, PNG, DOCX)</p>
+                </div>
+
+                <!-- 🆕 Approval Notice -->
+                <p class="text-xs text-[#d97706] mt-2">⚠️ Your account will be reviewed by an admin before you can use the platform.</p>
+
+                <button type="submit" class="w-full bg-[#2c90e2] text-white text-sm font-bold py-2 rounded-lg mt-4 hover:bg-[#1f7ac0]">
+                    Sign Up
+                </button>
+            </form>
+
+            <p class="text-sm text-[#507695] text-center mt-4">
+                Already have an account? <a href="#" class="text-[#2c90e2] font-medium">Log in</a>
+            </p>
+        </div>
+    </section>
+</body>
+</html>

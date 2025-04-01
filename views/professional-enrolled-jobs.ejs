@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrolled Jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans:wght@400;500;700" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900" style="font-family: 'Inter', 'Noto Sans', sans-serif;">
+
+    <div class="flex h-screen border border-gray-300 rounded-lg shadow-lg overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-gray-100 shadow-md min-h-screen p-6 flex flex-col justify-between border-r border-gray-300">
+            <div>
+                <div class="flex items-center gap-4 text-black mb-8">
+                    <div class="w-6 h-6 text-black">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-black text-xl font-bold">ProConnect</h2>
+                </div>
+
+                <h2 class="text-lg font-bold text-gray-800 mb-6">Professional Dashboard</h2>
+                <nav class="space-y-4">
+                    <a href="/professional-home" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        🏠 Home
+                    </a>
+                    <a href="/professional-available-jobs" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        📋 Available Jobs
+                    </a>
+                    <a href="/professional-enrolled-jobs" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black font-bold">
+                        🔖 Enrolled Jobs
+                    </a>
+                    <a href="/professional-payment-requests" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        💰 Request Payment
+                    </a>
+                    <a href="/professional-job-history" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        📜 Job History
+                    </a>                    
+                </nav>
+            </div>
+
+            <a href="/logout" class="block text-red-500 font-medium mt-auto flex items-center gap-2 hover:text-red-600">
+                🚪 Logout
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-10 bg-gray-50">
+            <header class="flex items-center justify-between border-b border-gray-300 pb-3">
+                <h2 class="text-2xl font-bold text-gray-900">Enrolled Jobs</h2>
+            </header>
+
+            <section class="mt-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900">Jobs You Are Enrolled In</h3>
+
+                    <!-- Jobs Table -->
+                    <div class="overflow-y-auto max-h-[400px] border border-gray-300 rounded-lg">
+                        <table class="w-full border-collapse border border-gray-300 text-left">
+                            <thead class="bg-gray-100 sticky top-0">
+                                <tr>
+                                    <th class="py-3 px-4 border border-gray-300">Job Title</th>
+                                    <th class="py-3 px-4 border border-gray-300">Company</th>
+                                    <th class="py-3 px-4 border border-gray-300">Company Contact</th>
+                                    <th class="py-3 px-4 border border-gray-300">Stages</th>
+                                    <th class="py-3 px-4 border border-gray-300">Total Work Time (hrs)</th>
+                                    <th class="py-3 px-4 border border-gray-300">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (enrolledJobs.length > 0) { %>
+                                    <% enrolledJobs.forEach(job => { %>
+                                        <tr class="border-t border-gray-300">
+                                            <td class="py-3 px-4"><%= job.title %></td>
+                                            <td class="py-3 px-4"><%= job.company_name %></td>
+                                            
+                                            <!-- Contact Details -->
+                                            <td class="py-3 px-4">
+                                                <p>Email: <%= job.company_email %></p>
+                                                <p>Phone: <%= job.company_phone %></p>
+                                            </td>
+                                            
+                                            <!-- Job Stages -->
+                                            <td class="py-3 px-4">
+                                                <% if (job.stages.length > 0) { %>
+                                                    <ul>
+                                                        <% job.stages.forEach(stage => { %>
+                                                            <li>🔹 <%= stage.stage_name %> - <%= stage.hours_required %> hrs</li>
+                                                        <% }) %>
+                                                    </ul>
+                                                <% } else { %>
+                                                    <p class="text-gray-500">No stages assigned</p>
+                                                <% } %>
+                                            </td>
+                                            
+                            
+                                            <!-- Total Work Time -->
+                                            <td class="py-3 px-4"><%= job.total_work_time %> hrs</td>
+                            
+                                            <!-- Status Toggle -->
+                                            <td class="py-3 px-4">
+                                                <button class="status-btn py-1 px-3 text-white rounded-md"
+                                                    data-job-id="<%= job.job_id %>"
+                                                    data-status="<%= job.enrollment_status %>"
+                                                    style="background-color: <%= job.enrollment_status === 'in progress' ? '#22c55e' : '#3b82f6' %>;">
+                                                    <%= job.enrollment_status %>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-gray-500">No enrolled jobs found.</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                            
+                        </table>
+                    </div>                    
+                </div>
+            </section>
+        </main>
+    </div>
+        <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white p-5 rounded-lg shadow-lg text-center w-1/3">
+            <h2 class="text-lg font-bold mb-4">Confirm Status Change</h2>
+            <p class="mb-4">Are you sure you want to mark this job as <span id="newStatusText" class="font-semibold"></span>?</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirmUpdate" class="bg-green-500 text-white px-4 py-2 rounded-md">Yes, Confirm</button>
+                <button id="cancelUpdate" class="bg-gray-300 px-4 py-2 rounded-md">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        let selectedJobId = null;
+        let newStatus = null;
+
+        // Get modal elements
+        const confirmationModal = document.getElementById("confirmationModal");
+        const newStatusText = document.getElementById("newStatusText");
+        const confirmUpdate = document.getElementById("confirmUpdate");
+        const cancelUpdate = document.getElementById("cancelUpdate");
+
+        // Add event listener to all status buttons
+        document.querySelectorAll(".status-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                selectedJobId = this.dataset.jobId;
+                let currentStatus = this.dataset.status.toLowerCase();
+
+                // Fix: Ensure completed status is correctly formatted
+                if (currentStatus === "in progress") {
+                    newStatus = "completed (awaiting payment)";
+                } else {
+                    newStatus = "in progress";
+                }
+
+                // Update modal text
+                newStatusText.textContent = newStatus;
+
+                // Show modal
+                confirmationModal.classList.remove("hidden");
+            });
+        });
+
+        // Confirm status update
+        confirmUpdate.addEventListener("click", async function () {
+            try {
+                const response = await fetch("/update-job-status", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ jobId: selectedJobId, newStatus })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    location.reload(); // Refresh page to reflect changes
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error("Error updating job status:", error);
+            }
+
+            // Hide modal
+            confirmationModal.classList.add("hidden");
+        });
+
+        // Cancel status update
+        cancelUpdate.addEventListener("click", function () {
+            confirmationModal.classList.add("hidden");
+        });
+        });
+
+    </script>
+        
+
+</body>
+</html>

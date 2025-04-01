@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup - Professional | ProConnect</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap" />
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="bg-[#f8fafb] min-h-screen flex flex-col font-['Inter', 'Noto Sans', sans-serif]">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e8eef3] px-10 py-3 bg-white">
+        <div class="flex items-center gap-4 text-[#0e151b]">
+            <div class="size-4">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor"></path>
+                </svg>
+            </div>
+            <a href="/"><h2 class="text-[#0e151b] text-lg font-bold tracking-[-0.015em]">ProConnect</h2></a>
+        </div>
+    </header>
+    <% if (messages.error) { %>
+        <% messages.error.forEach(err => { %>
+            <div class="bg-red-500 text-white p-2 rounded mb-3">
+                <%= err %>
+            </div>
+        <% }) %>
+    <% } %>
+    
+    <% if (messages.success) { %>
+        <% messages.success.forEach(msg => { %>
+            <div class="bg-green-500 text-white p-2 rounded mb-3">
+                <%= msg %>
+            </div>
+        <% }) %>
+    <% } %>
+    
+
+
+    <!-- Signup Section -->
+    <section class="flex flex-1 justify-center items-center py-10 px-4">
+        <div class="max-w-[500px] w-full bg-white shadow-lg rounded-xl p-8">
+            <h1 class="text-2xl font-bold text-[#0e151b] text-center">Sign Up as a Professional</h1>
+            <p class="text-sm text-[#507695] text-center mt-2">Create an account to connect with companies</p>
+
+            <form method="post" action="/signup-professional" enctype="multipart/form-data" class="mt-6 space-y-4">
+                <div>
+                    <label for="full_name" class="block text-sm font-medium text-[#0e151b]">Full Name</label>
+                    <input id="full_name" name="full_name" type="text" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter your full name" required />
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-[#0e151b]">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter your email" required />
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-[#0e151b]">Password</label>
+                    <input type="password" id="password" name="password" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter password" required />
+                </div>
+
+                <!-- <div>
+                    <label class="block text-sm font-medium text-[#0e151b]">Confirm Password</label>
+                    <input type="password" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Confirm password" required />
+                </div> -->
+
+                <div>
+                    <label for="phone_number" class="block text-sm font-medium text-[#0e151b]">Phone Number</label>
+                    <input type="tel" id="phone_number" name="phone_number" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter phone number" required />
+                </div>
+
+                <div>
+                    <label for="location" class="block text-sm font-medium text-[#0e151b]">Location</label>
+                    <input type="text" id="location" name="location" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="City, Country" required />
+                </div>
+
+                <div>
+                    <label for="field_of_expertise" class="block text-sm font-medium text-[#0e151b]">Field of Expertise</label>
+                    <select id="field_of_expertise" name="field_of_expertise" class="form-select w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" required>
+                        <option value="">Select your expertise</option>
+                        <option value="Software Development">Software Development</option>
+                        <option value="Graphic Design">Graphic Design</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Health">Health</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="years_of_experience" class="block text-sm font-medium text-[#0e151b]">Years of Experience</label>
+                    <input id="years_of_experience" name="years_of_experience" type="number" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="e.g., 5" min="0" required />
+                </div>
+
+                <div>
+                    <label for="short_bio" class="block text-sm font-medium text-[#0e151b]">Short Bio</label>
+                    <textarea id="short_bio" name="short_bio" class="form-textarea w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Briefly describe yourself..." rows="3" required></textarea>
+                </div>
+
+                <!-- 🆕 Verification Upload Field -->
+                <div>
+                    <label for="verification_document" class="block text-sm font-medium text-[#0e151b]">Upload Verification Document</label>
+                    <input id="verification_document" name="verification_document" type="file" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" accept=".pdf,.jpg,.jpeg,.png,.docx" required />
+                    <p class="text-xs text-[#507695] mt-1">Upload your CV, degree, or certification (PDF, JPG, PNG, DOCX)</p>
+                </div>
+
+                <!-- 🆕 Approval Notice -->
+                <p class="text-xs text-[#d97706] mt-2">⚠️ Your profile will be reviewed by an admin before you can use the platform.</p>
+
+                <button type="submit" class="w-full bg-[#2c90e2] text-white text-sm font-bold py-2 rounded-lg mt-4 hover:bg-[#1f7ac0]">
+                    Sign Up
+                </button>
+            </form>
+
+            <p class="text-sm text-[#507695] text-center mt-4">
+                Already have an account? <a href="#" class="text-[#2c90e2] font-medium">Log in</a>
+            </p>
+        </div>
+    </section>
+</body>
+</html>

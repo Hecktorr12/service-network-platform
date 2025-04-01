@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Payment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans:wght@400;500;700" rel="stylesheet">
+    <script defer>
+        let activePaymentButton = null;
+        let activeReceivedButton = null;
+        function openTermsModal() {
+            document.getElementById("terms-modal").classList.remove("hidden");
+        }
+    
+        function closeTermsModal() {
+            document.getElementById("terms-modal").classList.add("hidden");
+            document.getElementById("payment-table-container").classList.remove("hidden"); // Show the table
+        }
+    
+    
+        function openPaymentModal(enrolledJobId, jobTitle, payAmount) {
+            document.getElementById('payment-modal').classList.remove('hidden');
+            document.getElementById('payment-modal').dataset.enrolledJobId = enrolledJobId;
+            document.getElementById('payment-modal').dataset.jobTitle = jobTitle;
+            document.getElementById('payment-modal').dataset.payAmount = payAmount;
+        }
+    
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+        }
+    
+    
+        async function submitPaymentRequest() {
+            const enrolledJobId = document.getElementById('payment-modal').dataset.enrolledJobId;
+            const jobTitle = document.getElementById('payment-modal').dataset.jobTitle;
+            const payAmount = document.getElementById('payment-modal').dataset.payAmount;
+            const bankName = document.getElementById('bank-name').value;
+            const accountNumber = document.getElementById('account-number').value;
+            const accountName = document.getElementById('account-name').value;
+    
+            if (!bankName || !accountNumber || !accountName) {
+                alert('Please fill in all bank details.');
+                return;
+            }
+    
+            try {
+                const response = await fetch('/request-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        enrolledJobId,
+                        jobTitle,
+                        payAmount,
+                        bankName,
+                        accountNumber,
+                        accountName
+                    })
+                });
+    
+                const data = await response.json();
+    
+                if (data.success) {
+                    alert('Payment request submitted successfully!');
+                    location.reload(); // Refresh page
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error submitting payment request:', error);
+                alert('Something went wrong. Please try again.');
+            }
+        }
+    
+    
+        let currentPaymentRequestId = null;
+    
+        // Open Confirmation Modal
+       // Modify your openConfirmationModal function to validate the ID
+    function openConfirmationModal(paymentRequestId) {
+        // Check if paymentRequestId is valid
+        if (!paymentRequestId) {
+            alert("You need to request payment first before confirming receipt.");
+            return;
+        }
+        
+        currentPaymentRequestId = paymentRequestId;
+        document.getElementById("confirmation-modal").classList.remove("hidden");
+    }
+    
+        // Close Confirmation Modal
+    function closeConfirmationModal() {
+        document.getElementById("confirmation-modal").classList.add("hidden");
+    }
+        // Handle Payment Confirmation
+        async function confirmPaymentReceipt() {
+    if (!currentPaymentRequestId) {
+        alert("Invalid payment request");
+        return;
+    }
+
+    try {
+        console.log("Sending payment confirmation for ID:", currentPaymentRequestId);
+        
+        const response = await fetch('/confirm-payment-received', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paymentRequestId: currentPaymentRequestId })
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+
+        if (data.success) {
+            // Fix the backticks here
+            const btn = document.getElementById(`received-btn-${currentPaymentRequestId}`);
+            if (btn) {
+                btn.innerText = "Received";
+                btn.classList.remove("bg-gray-400", "hover:bg-green-600");
+                btn.classList.add("bg-green-500");
+                btn.disabled = true;
+            }
+            alert("Payment confirmed successfully!");
+        } else {
+            alert("Error: " + data.message);
+        }
+    } catch (error) {
+        console.error("Error confirming payment:", error);
+        alert("Something went wrong. Please try again.");
+    }
+
+    closeConfirmationModal();
+}
+    
+        
+    
+    
+    
+    
+    </script>
+</head>
+<body class="bg-white text-gray-900" style="font-family: 'Inter', 'Noto Sans', sans-serif;">
+    <!-- Terms and Conditions Modal (Appears on Page Load) -->
+    <div id="terms-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-semibold mb-4">Terms and Conditions</h2>
+            <p class="text-gray-700 text-sm mb-4">
+                By using this platform to request payment, you agree to the following:
+            </p>
+            <ul class="text-gray-700 text-sm mb-4 list-disc pl-5">
+                <li>ProConnect is a <b>job-matching platform</b> and is <b>not responsible</b> for payments.</li>
+                <li>All payments are <b>handled by the hiring company</b> and <b>not by ProConnect</b>.</li>
+                <li>Once you request a payment, <b>you must follow up with the company</b> for confirmation.</li>
+                <li>In case of a payment dispute, <b>please contact the hiring company or your bank directly</b>.</li>
+                <li>ProConnect is <b>not liable for delayed or missing payments</b>.</li>
+            </ul>
+            <p class="text-gray-700 text-sm mb-4">
+                If you do not agree with these terms, please do not proceed.
+            </p>
+            <div class="flex justify-end">
+                <button class="bg-green-500 text-white py-2 px-4 rounded-md" onclick="closeTermsModal()">I Agree</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex h-screen border border-gray-300 rounded-lg shadow-lg overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-gray-100 shadow-md min-h-screen p-6 flex flex-col justify-between border-r border-gray-300">
+            <div>
+                <div class="flex items-center gap-4 text-black mb-8">
+                    <div class="w-6 h-6 text-black">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-black text-xl font-bold">ProConnect</h2>
+                </div>
+                <h2 class="text-lg font-bold text-gray-800 mb-6">Professional Dashboard</h2>
+                <nav class="space-y-4">
+                    <a href="/professional-home" class="block text-gray-700 font-medium hover:text-black">🏠 Home</a>
+                    <a href="/professional-available-jobs" class="block text-gray-700 font-medium hover:text-black">📋 Available Jobs</a>
+                    <a href="/professional-enrolled-jobs" class="block text-gray-700 font-medium hover:text-black">🔖 Enrolled Jobs</a>
+                    <a href="/professional-payment-requests" class="block text-gray-700 font-medium hover:text-black font-bold">💰 Request Payment</a>
+                    <a href="/professional-job-history" class="block text-gray-700 font-medium flex items-center gap-2 hover:text-black">
+                        📜 Job History
+                    </a>                    
+                </nav>
+            </div>
+            <a href="/logout" class="block text-red-500 font-medium hover:text-red-600">🚪 Logout</a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-10 bg-gray-50">
+            <header class="flex items-center justify-between border-b border-gray-300 pb-3">
+                <h2 class="text-2xl font-bold text-gray-900">Request Payment</h2>
+            </header>
+
+            <!-- Payment Restriction Notice -->
+            <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                ⚠️ You can only request payment if your <b>total accumulated work hours exceed 200 hours</b>.
+            </div>
+
+            <section id="payment-table-container" class="mt-6 hidden">
+                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900">Completed Jobs</h3>
+            
+                    <!-- Jobs Table (with Sticky Header) -->
+                    <div class="overflow-x-auto max-h-80 border border-gray-300">
+                        <table class="w-full border-collapse border border-gray-300 text-left">
+                            <thead class="sticky top-0 bg-gray-100 shadow-md">
+                                <tr>
+                                    <th class="py-3 px-4 border border-gray-300">Job Title</th>
+                                    <th class="py-3 px-4 border border-gray-300">Company</th>
+                                    <th class="py-3 px-4 border border-gray-300">Company Contact</th>
+                                    <th class="py-3 px-4 border border-gray-300">Actions</th>
+                                    <th class="py-3 px-4 border border-gray-300">Payment Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (jobs.length === 0) { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-gray-500">No completed jobs awaiting payment.</td>
+                                    </tr>
+                                <% } else { %>
+                                    <% jobs.forEach(job => { %>
+                                        <tr class="border-t border-gray-300">
+                                            <td class="py-3 px-4"><%= job.job_title %></td>
+                                            <td class="py-3 px-4"><%= job.company_name %></td>
+                                            <td class="py-3 px-4"><h2>Email: <%= job.company_contact %></h2> <h2>Company number: <%= job.company_number %></h2></td>
+                            
+                                            <!-- Request Payment Button -->
+                                            <td class="py-3 px-4">
+                                                <button class="request-payment-btn py-1 px-3 <%= canRequestPayment ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 cursor-not-allowed' %> text-white rounded-md" 
+                                                    onclick="<%= canRequestPayment ? `openPaymentModal(${job.enrolled_job_id}, '${job.job_title}', ${job.pay})` : '' %>"
+                                                    <%= canRequestPayment ? '' : 'disabled' %>
+                                                    title="<%= canRequestPayment ? 'Request payment for this job' : 'You need 200+ hours to request payment' %>">
+                                                    Request Payment
+                                                </button>
+                                            </td>
+                            
+                                            <!-- Payment Confirmation -->
+                                            <!-- Payment Confirmation -->
+                                            <td class="py-3 px-4">
+                                                <% if (job.payment_request_id) { %>
+                                                    <button id="received-btn-<%= job.payment_request_id %>" 
+                                                        class="received-btn py-1 px-3 <%= job.professional_receipt_status ? 'bg-green-500' : 'bg-gray-400 hover:bg-green-600' %> text-white rounded-md" 
+                                                        onclick="openConfirmationModal(<%= job.payment_request_id %>)"
+                                                        <%= job.professional_receipt_status ? 'disabled' : '' %>>
+                                                        <%= job.professional_receipt_status ? 'Received' : 'Not Received' %>
+                                                    </button>
+                                                <% } else { %>
+                                                    <button class="py-1 px-3 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>
+                                                        No Request Yet
+                                                    </button>
+                                                <% } %>
+                                            </td>                                            
+                                        </tr>
+                                    <% }); %>
+                                <% } %>
+                            </tbody>                            
+                        </table>
+                    </div>
+                </div>
+            </section>            
+        </main>
+    </div>
+
+    <!-- Payment Request Modal -->
+    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-semibold mb-4">Request Payment</h2>
+
+            <label class="block mb-2">Bank Name</label>
+            <input type="text" id="bank-name" class="w-full border border-gray-300 rounded-md px-3 py-2 mb-4">
+
+            <label class="block mb-2">Account Number</label>
+            <input type="text" id="account-number" class="w-full border border-gray-300 rounded-md px-3 py-2 mb-4">
+
+            <label class="block mb-2">Account Name</label>
+            <input type="text" id="account-name" class="w-full border border-gray-300 rounded-md px-3 py-2 mb-4">
+
+            <div class="flex justify-end">
+                <button class="bg-gray-500 text-white py-2 px-4 rounded-md mr-2" onclick="closePaymentModal()">Cancel</button>
+                <button class="bg-green-500 text-white py-2 px-4 rounded-md" onclick="submitPaymentRequest()">Submit</button>
+            </div>
+        </div>
+    </div>
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-semibold mb-4">Confirm Payment Receipt</h2>
+            <p class="text-gray-700 mb-4">Are you sure you have received this payment?</p>
+            <div class="flex justify-end">
+                <button class="bg-gray-500 text-white py-2 px-4 rounded-md mr-2" onclick="closeConfirmationModal()">Cancel</button>
+                <button class="bg-green-500 text-white py-2 px-4 rounded-md" onclick="confirmPaymentReceipt()">Yes, I have</button>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+    
+
+</body>
+
+</html>

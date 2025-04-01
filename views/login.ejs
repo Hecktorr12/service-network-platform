@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | ProConnect</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap" />
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="bg-[#f8fafb] min-h-screen flex flex-col font-['Inter', 'Noto Sans', sans-serif]">
+    <% if (messages.error) { %>
+        <% messages.error.forEach(err => { %>
+            <div class="bg-red-500 text-white p-2 rounded mb-3">
+                <%= err %>
+            </div>
+        <% }) %>
+    <% } %>
+    
+    <% if (messages.success) { %>
+        <% messages.success.forEach(msg => { %>
+            <div class="bg-green-500 text-white p-2 rounded mb-3">
+                <%= msg %>
+            </div>
+        <% }) %>
+    <% } %>
+    <!-- Header -->
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e8eef3] px-10 py-3 bg-white">
+        <div class="flex items-center gap-4 text-[#0e151b]">
+            <div class="size-4">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor"></path>
+                </svg>
+            </div>
+            <a href="/"><h2 class="text-[#0e151b] text-lg font-bold tracking-[-0.015em]">ProConnect</h2></a>
+        </div>
+    </header>
+
+    <!-- Login Section -->
+    <section class="flex flex-1 justify-center items-center py-10 px-4">
+        <div class="max-w-[400px] w-full bg-white shadow-lg rounded-xl p-8">
+            <h1 class="text-2xl font-bold text-[#0e151b] text-center">Login to Your Account</h1>
+            <p class="text-sm text-[#507695] text-center mt-2">Welcome back! Please enter your credentials</p>
+
+            <!-- Login Form -->
+            <form action="/login" method="POST" class="mt-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-[#0e151b]">Email Address</label>
+                    <input type="email" name="email" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter your email" required />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#0e151b]">Password</label>
+                    <input type="password" name="password" class="form-input w-full rounded-lg border border-[#d1dce6] px-4 py-2 mt-1 bg-[#f8fafb] focus:border-[#2c90e2]" placeholder="Enter password" required />
+                </div>
+
+                <button class="w-full bg-[#2c90e2] text-white text-sm font-bold py-2 rounded-lg mt-4 hover:bg-[#1f7ac0]">
+                    Login
+                </button>
+            </form>
+
+            <!-- Additional Links -->
+            <p class="text-sm text-[#507695] text-center mt-4">
+                Don't have an account? <a href="/signup" class="text-[#2c90e2] font-medium">Sign Up</a>
+            </p>
+            <p class="text-sm text-[#2c90e2] text-center mt-2">
+                <a href="/forgot-password">Forgot Password?</a>
+            </p>
+        </div>
+    </section>
+</body>
+</html>
